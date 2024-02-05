@@ -1,53 +1,52 @@
-public class Task2{
+import java.util.Stack;
 
-//private static String input = "3[b2[ca]aaa]acb";
-private static char[] charArray = {'3','[','b','2','[','c','a',']',']'};
+public class Task2 {
 
-public static void main (String [] args){
-    calc(charArray , 0);
-}
+    public static String decodeString(String s) {
+        Stack<Integer> countStack = new Stack<>();
+        Stack<String> resultStack = new Stack<>();
+        int i = 0;
+        String currentString = "";
 
-public static void calc (char[] p_charArray, int position){
-    int open = 0;
-    int closed = 0;
-    
-        for(int i=position;i<p_charArray.length;i++){
-            char current = p_charArray[i];
-            if(closed <= open || closed == 0){
+        while (i < s.length()) {
+            char ch = s.charAt(i);
 
-            if(Character.isDigit(current)){
-                for(int j = 0;j<current;j++){
-                    calc(charArray, i+1);
+            if (Character.isDigit(ch)) {
+                // Extract the count of repetition
+                int count = 0;
+                while (Character.isDigit(s.charAt(i))) {
+                    count = count * 10 + (s.charAt(i) - '0');
+                    i++;
                 }
-            }else if(current== '['){
-                open++;
-            }else if(current == ']'){
-                closed++;
-            }else if(current == ' '){
-    
-            }else if(current == 'a' || current == 'c' || current == 'b'){
-                System.out.print(p_charArray[i]);
+                countStack.push(count);
+            } else if (ch == '[') {
+                // Push current result and reset currentString
+                resultStack.push(currentString);
+                currentString = "";
+                i++;
+            } else if (ch == ']') {
+                // Pop count and previous result, repeat the currentString and append
+                StringBuilder temp = new StringBuilder(resultStack.pop());
+                int count = countStack.pop();
+                for (int j = 0; j < count; j++) {
+                    temp.append(currentString);
+                }
+                currentString = temp.toString();
+                i++;
+            } else {
+                // Accumulate characters
+                currentString += ch;
+                i++;
             }
-        }else{
-            calc(p_charArray, i+1);
         }
-        }
-    
-    
-/* 
 
+        return currentString;
+    }
 
-    String[] openBrackets = p_input.split("\\[");
-    String [][] closedBrackets = new String[openBrackets.length][];
-    
-    for(int i =0;i<openBrackets.length;i++){
-           closedBrackets[i] = openBrackets[i].split("\\]");
+    public static void main(String[] args) {
+        String input = "3[b2[ca]]";
+        String output = decodeString(input);
+        System.out.println("Input: " + input);
+        System.out.println("Output: " + output);
     }
-    for(int i =0;i<openBrackets.length;i++){
-        for(int j=0;j<closedBrackets[i].length;j++){
-           System.out.println("i = " + i + "j = " + j + "value = " + closedBrackets[i][j]);
-        }
-    }
-    */
-}
 }
